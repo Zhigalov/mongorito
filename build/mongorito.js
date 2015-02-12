@@ -61,17 +61,7 @@ var Mongorito = (function () {
     return this.disconnect.apply(this, arguments);
   };
 
-  Mongorito.collection = (function (_collection) {
-    var _collectionWrapper = function collection() {
-      return _collection.apply(this, arguments);
-    };
-
-    _collectionWrapper.toString = function () {
-      return _collection.toString();
-    };
-
-    return _collectionWrapper;
-  })(function (db, name) {
+  Mongorito.collection = function collection(db, name) {
     var url = db.driver._connect_args[0];
     var collections = this.collections[url];
 
@@ -83,7 +73,8 @@ var Mongorito = (function () {
 
     var collection = db.get(name);
     return collections[name] = wrap(collection);
-  });
+  };
+
   return Mongorito;
 })();
 
@@ -355,24 +346,15 @@ var Model = (function () {
     return yield q;
   };
 
-  Model.count = (function (_count) {
-    var _countWrapper = function count() {
-      return _count.apply(this, arguments);
-    };
-
-    _countWrapper.toString = function () {
-      return _count.toString();
-    };
-
-    return _countWrapper;
-  })(function* (query) {
+  Model.count = function* count(query) {
     var collection = this.collection();
     var model = this;
 
     var count = new Query(collection, model).count(query);
 
     return yield count;
-  });
+  };
+
   Model.all = function* all() {
     return yield this.find();
   };
